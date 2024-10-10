@@ -1,2 +1,2 @@
 ## Continuous Heatmap Regression for Pose Estimation via Implicit Neural Representation
-![xxx](figures/overview.pdf)
+![](https://github.com/hushengxiang/NerPE/figures/overview.pdf)
