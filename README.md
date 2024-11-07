@@ -16,5 +16,13 @@ Please replace the values ​​of DATASET.ROOT, MODEL.PRETRAINED, and TEST.COCO
 ## Citation
 -->
 
+<!--
+
+Note
+代码可能出现问题，如果发生了请联系我们
+后续版本会在后续给出
+
+-->
+
 ## Acknowledgement
 This project is developed based on [HRNet](https://github.com/leoxiaobin/deep-high-resolution-net.pytorch/) and [LIIF](https://github.com/yinboc/liif).
