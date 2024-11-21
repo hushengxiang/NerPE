@@ -1,0 +1,131 @@
+AUTO_RESUME: true
+GPUS: (0,1,2,3)
+OUTPUT_DIR: 'output'
+LOG_DIR: 'log'
+WORKERS: 24
+
+DATASET:
+  DATASET: 'crowdpose'
+  ROOT: 'data/crowdpose/'
+  DATA_FORMAT: jpg
+  COLOR_RGB: true
+  TRAIN_SET: train
+  TEST_SET: val
+  FLIP: true
+  SCALE_FACTOR: 0.35
+  ROT_FACTOR: 45
+  PROB_HALF_BODY: 0.3
+  NUM_JOINTS_HALF_BODY: 8
+
+MODEL:
+  BACKONE: 'hrnet'
+  INIT_WEIGHTS: true
+  PRETRAINED: 'pretrained/pytorch/imagenet/hrnet_w32-36af842e.pth'
+  NUM_JOINTS: 14
+  TARGET_TYPE: gaussian
+  SCALE_PARAMETER: 0.06
+  IMAGE_SIZE:
+  - 192
+  - 256
+  PRE_FEAT_SIZE:
+  - 48
+  - 64
+  POST_FEAT_SIZE:
+  - 6
+  - 8
+  NUM_CHANNELS: 256
+  UPSAMPLE_TYPE: deconv       # deconv:  - nn.ConvTranspose2d           & upconv:   - nn.Upsample + nn.Conv2d
+  POS_ENC_COMPONENT: 0        # value=0: - w\o sinusoidal encoding      & value>=1: - w sinusoidal encoding
+  POS_LEARNABLE_PROJ: false   # true:    - dim is mapped to 32 via mlp  & false:    - dim is num_component * 4 + 2
+  IS_SUB_DIVISION: true       # true:    - uniform sampling             & false:    - random sampling
+  HIDDEN_CHANNELS_LIST: [256, 256, 128, 128, 128]  # lower dimension: [256, 128, 128, 128, 64]
+  SQRT_NUM_SAMPLE_PER_CELL: 8
+  UPSAMPLING_FACTOR: 32
+  EXTRA:
+    PRETRAINED_LAYERS:
+    - 'conv1'
+    - 'bn1'
+    - 'conv2'
+    - 'bn2'
+    - 'layer1'
+    - 'transition1'
+    - 'stage2'
+    - 'transition2'
+    - 'stage3'
+    - 'transition3'
+    - 'stage4'
+    STAGE2:
+      NUM_MODULES: 1
+      NUM_BRANCHES: 2
+      BLOCK: BASIC
+      NUM_BLOCKS:
+      - 4
+      - 4
+      NUM_CHANNELS:
+      - 32
+      - 64
+      FUSE_METHOD: SUM
+    STAGE3:
+      NUM_MODULES: 4
+      NUM_BRANCHES: 3
+      BLOCK: BASIC
+      NUM_BLOCKS:
+      - 4
+      - 4
+      - 4
+      NUM_CHANNELS:
+      - 32
+      - 64
+      - 128
+      FUSE_METHOD: SUM
+    STAGE4:
+      NUM_MODULES: 3
+      NUM_BRANCHES: 4
+      BLOCK: BASIC
+      NUM_BLOCKS:
+      - 4
+      - 4
+      - 4
+      - 4
+      NUM_CHANNELS:
+      - 32
+      - 64
+      - 128
+      - 256
+      FUSE_METHOD: SUM
+
+LOSS:
+  REG_INVIS_CONF_TO_ZERO: false
+
+TRAIN:
+  BATCH_SIZE_PER_GPU: 32
+  SHUFFLE: true
+  NUM_EPOCH: 210
+  LR: 0.001
+  LR_STEP:
+  - 170
+  - 200  
+  LR_FACTOR: 0.1
+  VALIDATE_EVERY: 10
+  PRINT_FREQ: 100
+
+TEST:
+  BATCH_SIZE_PER_GPU: 8 # 16
+  FLIP_TEST: true
+  PRINT_FREQ: 50
+  EXTRA:
+    USE_GT_BBOX: true
+    COCO_BBOX_FILE: 'data/crowdpose/annotations/det_for_crowd_test_0.1_0.5.json'
+    BBOX_THRE: 1.0
+    IMAGE_THRE: 0.0
+    IN_VIS_THRE: 0.2
+    NMS_THRE: 1.0
+    OKS_THRE: 0.9
+    SOFT_NMS: false
+
+DEBUG:
+  DEBUG: true
+  SAVE_BATCH_IMAGES_GT: true
+  SAVE_BATCH_IMAGES_PRED: true
+  SAVE_HEATMAPS_GT: true
+  SAVE_HEATMAPS_PRED: true
